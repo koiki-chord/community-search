@@ -19,6 +19,12 @@ import org.springframework.web.reactive.function.client.WebClient
 import org.springframework.web.reactive.function.client.bodyToMono
 import reactor.core.publisher.Mono
 
+/**
+ * This test will connect to actual Elasticsearch instance on your local.
+ *
+ * !! WARNING !!
+ * This will initialize "chord" index every time test runs.
+ */
 @ExtendWith(SpringExtension::class)
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
 class IntegrationTests(
