@@ -1,0 +1,9 @@
+spring:
+  application:
+    name: community-search
+server:
+  servlet:
+    context-path: ${spring.application.name}
+logging:
+  level:
+    dev.koiki.chord.communitysearch: debug
