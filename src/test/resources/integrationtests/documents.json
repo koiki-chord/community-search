@@ -1,10 +1,23 @@
 [
   {
     "name": "JJUG",
-    "desc": "Japan Java User Group"
+    "desc": "Japan Java User Group",
+    "tags": [
+      {
+        "value": "Java"
+      }
+    ]
   },
   {
     "name": "JSUG",
-    "desc": "Japan Spring User Group"
+    "desc": "Japan Spring User Group",
+    "tags": [
+      {
+        "value": "Java"
+      },
+      {
+        "value": "Spring"
+      }
+    ]
   }
 ]

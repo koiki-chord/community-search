@@ -3,12 +3,18 @@
     "community": {
       "properties": {
         "name": {
-          "type": "text",
+          "type": "string",
           "analyzer": "standard"
         },
         "desc": {
-          "type": "text",
+          "type": "string",
           "analyzer": "standard"
+        },
+        "tags": {
+          "type": "nested",
+          "properties": {
+            "value": "string"
+          }
         }
       }
     }

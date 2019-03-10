@@ -9,6 +9,7 @@ import org.junit.jupiter.api.BeforeAll
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
 import org.junit.jupiter.api.extension.ExtendWith
+import org.slf4j.LoggerFactory
 import org.springframework.boot.test.context.SpringBootTest
 import org.springframework.boot.web.server.LocalServerPort
 import org.springframework.http.ReactiveHttpOutputMessage
@@ -31,6 +32,8 @@ class IntegrationTests(
         @LocalServerPort
         val port: Int
 ) {
+    private val log = LoggerFactory.getLogger(this::class.java)
+
     private lateinit var webClient: WebClient
 
     companion object {
@@ -79,12 +82,15 @@ class IntegrationTests(
 
     @Test
     fun test01() {
-        val result: Mono<List<Community>> = webClient.get()
+        val resultMono: Mono<List<Community>> = webClient.get()
                 .uri("/")
                 .retrieve()
                 .bodyToMono()
 
-        assertThat(result.block()!!.map { it.name }.toList())
+        val result = resultMono.block()
+        log.info("$result")
+
+        assertThat(result!!.map { it.name }.toList())
                 .contains("JJUG", "JSUG")
     }
 }

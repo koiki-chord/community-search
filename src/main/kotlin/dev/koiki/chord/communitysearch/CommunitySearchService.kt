@@ -8,7 +8,9 @@ import org.elasticsearch.action.search.SearchRequest
 import org.elasticsearch.action.search.SearchResponse
 import org.elasticsearch.client.RequestOptions
 import org.elasticsearch.client.RestHighLevelClient
+import org.elasticsearch.index.query.QueryBuilders
 import org.elasticsearch.search.SearchHit
+import org.elasticsearch.search.builder.SearchSourceBuilder
 import org.slf4j.LoggerFactory
 import org.springframework.cloud.sleuth.SpanNamer
 import org.springframework.stereotype.Service
@@ -24,8 +26,16 @@ class CommunitySearchService(
 ) {
     private val log = LoggerFactory.getLogger(this::class.java)
 
-    fun findAll(): Mono<List<Community>> = Mono.create { sink ->
-        client.searchAsync(SearchRequest(), RequestOptions.DEFAULT, actionListener(sink))
+    fun findAll(): Mono<List<Community>> {
+        val request = SearchRequest()
+                .indices("chord")
+                .source(SearchSourceBuilder().query(
+                        QueryBuilders.matchAllQuery()
+                ))
+
+        return Mono.create { sink ->
+            client.searchAsync(request, RequestOptions.DEFAULT, actionListener(sink))
+        }
     }
 
     private fun actionListener(sink: MonoSink<List<Community>>): ActionListener<SearchResponse> = object : ActionListener<SearchResponse> {
