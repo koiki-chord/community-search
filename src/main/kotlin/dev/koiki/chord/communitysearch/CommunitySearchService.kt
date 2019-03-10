@@ -10,6 +10,7 @@ import org.elasticsearch.action.search.SearchResponse
 import org.elasticsearch.client.RequestOptions
 import org.elasticsearch.client.RestHighLevelClient
 import org.elasticsearch.index.query.BoolQueryBuilder
+import org.elasticsearch.index.query.Operator
 import org.elasticsearch.index.query.QueryBuilders
 import org.elasticsearch.search.SearchHit
 import org.elasticsearch.search.builder.SearchSourceBuilder
@@ -42,8 +43,10 @@ class CommunitySearchService(
 
     fun search(csRequest: CommunitySearchRequest): Mono<List<Community>> {
         val boolQueryBuilder: BoolQueryBuilder = QueryBuilders.boolQuery()
-        csRequest.names.forEach {
-            boolQueryBuilder.must().add(QueryBuilders.matchQuery("name", it))
+        if (csRequest.text != null) {
+            boolQueryBuilder.should().add(QueryBuilders.matchQuery("name", csRequest.text).operator(Operator.AND))
+            boolQueryBuilder.should().add(QueryBuilders.matchQuery("desc", csRequest.text).operator(Operator.AND))
+            boolQueryBuilder.minimumShouldMatch(1)
         }
 
         val searchSourceBuilder = SearchSourceBuilder().query(

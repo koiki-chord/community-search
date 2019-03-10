@@ -17,9 +17,7 @@ import org.springframework.test.context.junit.jupiter.SpringExtension
 import org.springframework.web.reactive.function.BodyInserter
 import org.springframework.web.reactive.function.BodyInserters
 import org.springframework.web.reactive.function.client.WebClient
-import org.springframework.web.reactive.function.client.bodyToFlux
 import org.springframework.web.reactive.function.client.bodyToMono
-import reactor.core.publisher.Flux
 import reactor.core.publisher.Mono
 
 /**
@@ -40,8 +38,8 @@ class IntegrationTests(
 
     companion object {
         private val esClient = WebClient.create("http://localhost:9200")
-        private val skipInit = true
-        private val skipDestroy = true
+        private val skipInit = false
+        private val skipDestroy = false
 
         @BeforeAll
         @JvmStatic
@@ -101,37 +99,16 @@ class IntegrationTests(
         log.info("$result")
 
         assertThat(result!!.map { it.name }.toList())
-                .contains("JJUG", "JSUG")
+                .hasSize(2)
     }
 
     @Test
     fun search01() {
-
-        /*
-        val resultMono: Flux<Community> = webClient.post()
-                .uri("/search")
-                .body(BodyInserters.fromObject(
-                        CommunitySearchRequest(
-                                names = listOf("JJUG")
-                        )
-                ))
-                .retrieve()
-                .bodyToFlux()
-
-        resultMono.subscribe {
-            log.info("$it")
-        }
-
-        val result = resultMono.collectList().block()
-        log.info("$result")
-*/
-
-
         val resultMono: Mono<List<Community>> = webClient.post()
                 .uri("/search")
                 .body(BodyInserters.fromObject(
                         CommunitySearchRequest(
-                                names = listOf("JJUG")
+                                text = "CoD BO"
                         )
                 ))
                 .retrieve()
@@ -141,6 +118,6 @@ class IntegrationTests(
 
 
         assertThat(result!!.map { it.name }.toList())
-                .contains("JJUG")
+                .hasSize(2)
     }
 }

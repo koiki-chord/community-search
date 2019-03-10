@@ -1,22 +1,18 @@
 [
   {
-    "name": "JJUG",
-    "desc": "Japan Java User Group",
-    "tags": [
-      {
-        "value": "Java"
-      }
-    ]
+    "name": "バトルロワイヤル総合",
+    "desc": "blackout(CoD BO)、APEX、PUBG、荒野行動",
+    "tags": []
   },
   {
-    "name": "JSUG",
-    "desc": "Japan Spring User Group",
+    "name": "CoD BOシリーズ",
+    "desc": "CoD BOシリーズやりましょう",
     "tags": [
       {
-        "value": "Java"
+        "value": "cod"
       },
       {
-        "value": "Spring"
+        "value": "ps4"
       }
     ]
   }

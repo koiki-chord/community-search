@@ -3,11 +3,11 @@
     "community": {
       "properties": {
         "name": {
-          "type": "string",
+          "type": "text",
           "analyzer": "standard"
         },
         "desc": {
-          "type": "string",
+          "type": "text",
           "analyzer": "standard"
         },
         "tags": {
