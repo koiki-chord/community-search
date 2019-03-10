@@ -13,4 +13,11 @@ class CommunitySearchHandler(
     fun findAll(request: ServerRequest): Mono<ServerResponse> = ServerResponse
             .ok()
             .body(searchService.findAll())
+
+    fun search(request: ServerRequest): Mono<ServerResponse> = ServerResponse
+            .ok()
+            .body(
+                    request.bodyToMono(CommunitySearchRequest::class.java)
+                            .flatMap { searchService.search(it) }
+            )
 }

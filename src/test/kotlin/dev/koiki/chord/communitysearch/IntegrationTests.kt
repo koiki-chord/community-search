@@ -17,7 +17,9 @@ import org.springframework.test.context.junit.jupiter.SpringExtension
 import org.springframework.web.reactive.function.BodyInserter
 import org.springframework.web.reactive.function.BodyInserters
 import org.springframework.web.reactive.function.client.WebClient
+import org.springframework.web.reactive.function.client.bodyToFlux
 import org.springframework.web.reactive.function.client.bodyToMono
+import reactor.core.publisher.Flux
 import reactor.core.publisher.Mono
 
 /**
@@ -38,10 +40,15 @@ class IntegrationTests(
 
     companion object {
         private val esClient = WebClient.create("http://localhost:9200")
+        private val skipInit = true
+        private val skipDestroy = true
 
         @BeforeAll
         @JvmStatic
         internal fun beforeAll() {
+            if (skipInit)
+                return
+
             esClient.put()
                     .uri("/chord")
                     .body(readFile("schema.json"))
@@ -64,6 +71,9 @@ class IntegrationTests(
         @AfterAll
         @JvmStatic
         internal fun afterAll() {
+            if (skipDestroy)
+                return
+
             esClient.delete()
                     .uri("/chord")
                     .exchange()
@@ -81,7 +91,7 @@ class IntegrationTests(
     }
 
     @Test
-    fun test01() {
+    fun findAll() {
         val resultMono: Mono<List<Community>> = webClient.get()
                 .uri("/")
                 .retrieve()
@@ -92,5 +102,45 @@ class IntegrationTests(
 
         assertThat(result!!.map { it.name }.toList())
                 .contains("JJUG", "JSUG")
+    }
+
+    @Test
+    fun search01() {
+
+        /*
+        val resultMono: Flux<Community> = webClient.post()
+                .uri("/search")
+                .body(BodyInserters.fromObject(
+                        CommunitySearchRequest(
+                                names = listOf("JJUG")
+                        )
+                ))
+                .retrieve()
+                .bodyToFlux()
+
+        resultMono.subscribe {
+            log.info("$it")
+        }
+
+        val result = resultMono.collectList().block()
+        log.info("$result")
+*/
+
+
+        val resultMono: Mono<List<Community>> = webClient.post()
+                .uri("/search")
+                .body(BodyInserters.fromObject(
+                        CommunitySearchRequest(
+                                names = listOf("JJUG")
+                        )
+                ))
+                .retrieve()
+                .bodyToMono()
+
+        val result = resultMono.block()
+
+
+        assertThat(result!!.map { it.name }.toList())
+                .contains("JJUG")
     }
 }

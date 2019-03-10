@@ -13,5 +13,6 @@ class CommunitySearchRouter(
     @Bean
     fun routerFunction(): RouterFunction<ServerResponse> = router {
         GET("/", handler::findAll)
+        POST("/search", handler::search)
     }
 }
