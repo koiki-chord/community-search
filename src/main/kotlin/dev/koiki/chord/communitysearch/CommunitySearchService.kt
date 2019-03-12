@@ -29,16 +29,15 @@ class CommunitySearchService(
     private val log = LoggerFactory.getLogger(this::class.java)
 
     fun search(csRequest: CommunitySearchRequest): Mono<List<Community>> {
-        val boolQueryBuilder: BoolQueryBuilder = QueryBuilders.boolQuery()
+        val boolQueryBuilder = QueryBuilders.boolQuery()
+
         if (csRequest.text != null) {
             boolQueryBuilder.should().add(QueryBuilders.matchQuery("name", csRequest.text).operator(Operator.AND))
             boolQueryBuilder.should().add(QueryBuilders.matchQuery("desc", csRequest.text).operator(Operator.AND))
             boolQueryBuilder.minimumShouldMatch(1)
         }
 
-        val searchSourceBuilder = SearchSourceBuilder().query(
-                boolQueryBuilder
-        )
+        val searchSourceBuilder = SearchSourceBuilder().query(boolQueryBuilder)
 
         if (log.isDebugEnabled)
             log.debug("query: $searchSourceBuilder")
@@ -47,49 +46,11 @@ class CommunitySearchService(
                 .indices("chord")
                 .source(searchSourceBuilder)
 
-        // this magic is needed to propagate current trace to ActionListener.
-        // don't get traceContext in ActionListener.
         val currentTraceContext = this.tracing.currentTraceContext()
         val traceContext = this.tracing.currentTraceContext().get()
 
         return Mono.create { sink ->
-            client.searchAsync(request, RequestOptions.DEFAULT, actionListener(sink, currentTraceContext, traceContext))
+            client.searchAsync(request, RequestOptions.DEFAULT, CommunityActionListener(sink, currentTraceContext, traceContext, mapper))
         }
     }
-
-    private fun actionListener(sink: MonoSink<List<Community>>, currentTraceContext: CurrentTraceContext, traceContext: TraceContext): ActionListener<SearchResponse> =
-            object : ActionListener<SearchResponse> {
-
-                override fun onResponse(response: SearchResponse) {
-                    val scope = currentTraceContext.maybeScope(traceContext)
-
-                    scope.use {
-                        if (log.isDebugEnabled)
-                            log.debug("search result: ${mapper.writeValueAsString(response)}")
-
-                        val communities: List<Community> = mapper.readValue(
-                                response
-                                        .hits
-                                        .hits
-                                        .joinToString(
-                                                transform = SearchHit::getSourceAsString,
-                                                prefix = "[", postfix = "]", separator = ","
-                                        )
-                        )
-
-                        sink.success(communities)
-                    }
-                }
-
-                override fun onFailure(e: Exception) {
-                    val scope = currentTraceContext.maybeScope(traceContext)
-
-                    scope.use {
-                        if (log.isDebugEnabled)
-                            log.error(e.message, e)
-
-                        sink.error(e)
-                    }
-                }
-            }
 }

@@ -1,4 +1,4 @@
-package dev.koiki.chord.communitysearch
+package dev.koiki.chord.communitysearch.config
 
 import org.apache.http.HttpHost
 import org.elasticsearch.client.RestClient

@@ -10,7 +10,7 @@ import org.springframework.web.reactive.function.server.ServerResponse
 import reactor.core.publisher.Mono
 
 @Component
-class CommunitySearchHandler(
+class MyHandler(
         val searchService: CommunitySearchService
 ) {
     private val log = LoggerFactory.getLogger(this::class.java)
