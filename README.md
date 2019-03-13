@@ -1,5 +1,5 @@
 # community-search
-WIP
+docs: http://localhost:8080/docs/index.html
 
 ## Elasticsearch
 Elasticsearch version is`6.6.1`.

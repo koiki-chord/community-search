@@ -1,0 +1,22 @@
+= Community Search API
+
+== POST /search
+
+=== Request
+
+==== Sample
+include::{snippets}/search/curl-request.adoc[]
+
+==== Request Body
+include::{snippets}/search/request-body.adoc[]
+
+==== Detail
+include::{snippets}/search/request-fields.adoc[]
+
+=== Response
+
+==== Response Body
+include::{snippets}/search/response-body.adoc[]
+
+==== Detail
+include::{snippets}/search/response-fields.adoc[]

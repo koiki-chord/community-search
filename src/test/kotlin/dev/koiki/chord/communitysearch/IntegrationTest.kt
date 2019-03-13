@@ -27,9 +27,9 @@ import reactor.core.publisher.Mono
  */
 @ExtendWith(SpringExtension::class)
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
-class IntegrationTests(
+class IntegrationTest(
         @LocalServerPort
-        val port: Int
+        private val port: Int
 ) {
     private val log = LoggerFactory.getLogger(this::class.java)
     private val mapper = ObjectMapper().registerModule(KotlinModule())
