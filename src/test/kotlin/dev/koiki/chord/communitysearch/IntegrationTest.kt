@@ -43,8 +43,8 @@ class IntegrationTest(
             if (skipInit)
                 return
 
-            ElasticsearchOperation.initializeDocuments()
             ElasticsearchOperation.createIndex()
+            ElasticsearchOperation.initializeDocuments()
         }
 
         @AfterAll

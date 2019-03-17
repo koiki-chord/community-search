@@ -3,13 +3,13 @@ package dev.koiki.chord.communitysearch
 import org.junit.jupiter.api.Test
 
 class LocalTestUtils {
-    //@Test
+    @Test
     fun init() {
-        ElasticsearchOperation.createIndex()
+        //ElasticsearchOperation.createIndex()
         ElasticsearchOperation.initializeDocuments()
     }
 
-    @Test
+    //@Test
     fun drop() {
         ElasticsearchOperation.dropIndex()
     }

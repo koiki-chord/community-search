@@ -11,4 +11,7 @@ brew install elasticsearch
 brew info elasticsearch
 brew services restart elasticsearch
 curl http://localhost:9200
+
+/usr/local/Cellar/elasticsearch/6.6.1/bin/elasticsearch-plugin install analysis-icu
+/usr/local/Cellar/elasticsearch/6.6.1/bin/elasticsearch-plugin install analysis-kuromoji
 ```

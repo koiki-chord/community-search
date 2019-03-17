@@ -1,19 +1,55 @@
 {
+  "settings": {
+    "analysis": {
+      "tokenizer": {
+        "my_kuromoji_tokenizer": {
+          "type": "kuromoji_tokenizer",
+          "mode": "search"
+        }
+      },
+      "analyzer": {
+        "my_kuromoji_analyzer": {
+          "type": "custom",
+          "tokenizer": "my_kuromoji_tokenizer"
+        }
+      }
+    }
+  },
   "mappings": {
     "community": {
       "properties": {
         "name": {
           "type": "text",
-          "analyzer": "standard"
+          "fields": {
+            "english": {
+              "type":     "text",
+              "analyzer": "english"
+            },
+            "japanese": {
+              "type":     "text",
+              "analyzer": "my_kuromoji_analyzer"
+            }
+          }
         },
         "desc": {
           "type": "text",
-          "analyzer": "standard"
+          "fields": {
+            "english": {
+              "type":     "text",
+              "analyzer": "english"
+            },
+            "japanese": {
+              "type":     "text",
+              "analyzer": "my_kuromoji_analyzer"
+            }
+          }
         },
         "tags": {
           "type": "nested",
           "properties": {
-            "value": "string"
+            "value": {
+              "type": "text"
+            }
           }
         }
       }
