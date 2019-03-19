@@ -10,7 +10,6 @@ import org.springframework.web.reactive.function.BodyInserters
 import org.springframework.web.reactive.function.server.ServerRequest
 import org.springframework.web.reactive.function.server.ServerResponse
 import reactor.core.publisher.Mono
-import java.lang.RuntimeException
 
 @Component
 class MyHandler(
@@ -19,12 +18,13 @@ class MyHandler(
 ) {
     private val log = LoggerFactory.getLogger(this::class.java)
 
-    fun search(request: ServerRequest): Mono<ServerResponse> =
-            request.bodyToMono(CommunitySearchRequest::class.java)
-                    .doOnNext(CommunitySearchRequest::isValid)
-                    .flatMap(searchService::search)
-                    .flatMap(::successResponse)
-                    .onErrorResume(::errorResponse)
+    fun search(request: ServerRequest): Mono<ServerResponse> {
+        val text = request.queryParam("text").orElseThrow { RuntimeException("todo") }
+
+        return searchService.search(text)
+                .flatMap(::successResponse)
+                .onErrorResume(::errorResponse)
+    }
 
     fun complete(request: ServerRequest): Mono<ServerResponse> {
         val keyword = request.queryParam("keyword").orElseThrow { RuntimeException("todo") }
@@ -41,17 +41,6 @@ class MyHandler(
 
     private fun errorResponse(t: Throwable): Mono<ServerResponse> =
             when(t) {
-                is ValidationException -> {
-                    ServerResponse
-                            .status(HttpStatus.BAD_REQUEST)
-                            .body(BodyInserters.fromObject(
-                                    ErrorResponse(
-                                            trace = getTrace(),
-                                            details = t.errorDetails
-                                    )
-                            ))
-                }
-
                 else -> {
                     log.error(t.message, t)
 

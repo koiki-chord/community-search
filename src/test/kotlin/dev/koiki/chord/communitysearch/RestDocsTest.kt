@@ -47,22 +47,21 @@ class RestDocsTest {
     @Test
     fun search() {
         val expected = BodyInserters.fromObject(listOf(
-                Community(name = "JJUG", desc = "Japan Java User Group", tags = listOf(Tag(value = "Java")))
+                Community(name = "JSUG", desc = "Japan Spring User Group", tags = listOf(Tag(value = "Java")))
         ))
 
         `when`(myHandler.search(any()))
                 .thenReturn(ServerResponse.ok().body(expected))
 
         this.webTestClient
-                .post()
-                .uri("/search")
-                .body(BodyInserters.fromObject(CommunitySearchRequest(text = "Java Spring")))
+                .get()
+                .uri("/search?text={text}", mapOf("text" to "Java Spring"))
                 .exchange()
                 .expectStatus().isOk
                 .expectBody()
                 .consumeWith(document("search",
-                        requestFields(
-                                fieldWithPath("text")
+                        requestParameters(
+                                parameterWithName("text")
                                         .description("""NotNull and NotEmpty.
                                             | Text for full-text search.
                                             | Space represents "AND" condition

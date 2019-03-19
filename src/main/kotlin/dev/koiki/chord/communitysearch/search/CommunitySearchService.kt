@@ -3,7 +3,6 @@ package dev.koiki.chord.communitysearch.search
 import brave.Tracing
 import com.fasterxml.jackson.databind.ObjectMapper
 import dev.koiki.chord.communitysearch.Community
-import dev.koiki.chord.communitysearch.CommunitySearchRequest
 import org.elasticsearch.action.search.SearchRequest
 import org.elasticsearch.client.RequestOptions
 import org.elasticsearch.client.RestHighLevelClient
@@ -22,14 +21,12 @@ class CommunitySearchService(
 ) {
     private val log = LoggerFactory.getLogger(this::class.java)
 
-    fun search(csRequest: CommunitySearchRequest): Mono<List<Community>> {
+    fun search(text: String): Mono<List<Community>> {
         val boolQueryBuilder = QueryBuilders.boolQuery()
 
-        if (csRequest.text != null) {
-            boolQueryBuilder.should().add(QueryBuilders.matchQuery("name", csRequest.text).operator(Operator.AND))
-            boolQueryBuilder.should().add(QueryBuilders.matchQuery("desc", csRequest.text).operator(Operator.AND))
-            boolQueryBuilder.minimumShouldMatch(1)
-        }
+        boolQueryBuilder.should().add(QueryBuilders.matchQuery("name", text).operator(Operator.AND))
+        boolQueryBuilder.should().add(QueryBuilders.matchQuery("desc", text).operator(Operator.AND))
+        boolQueryBuilder.minimumShouldMatch(1)
 
         val searchSourceBuilder = SearchSourceBuilder().query(boolQueryBuilder)
 

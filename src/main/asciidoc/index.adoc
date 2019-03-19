@@ -2,22 +2,19 @@
 :toc: left
 :toclevels: 3
 
-== POST /search
+== GET /search
 
 === Request
 
 ==== Sample
 include::{snippets}/search/curl-request.adoc[]
 
-==== Request Body
-include::{snippets}/search/request-body.adoc[]
-
-==== Detail
-include::{snippets}/search/request-fields.adoc[]
+==== Request Parameters
+include::{snippets}/search/request-parameters.adoc[]
 
 === Response
 
-==== Response Body
+==== Sample
 include::{snippets}/search/response-body.adoc[]
 
 ==== Detail
@@ -36,8 +33,12 @@ include::{snippets}/complete/request-parameters.adoc[]
 
 === Response
 
-==== Response Body
+==== Sample
 include::{snippets}/complete/response-body.adoc[]
 
 ==== Detail
 include::{snippets}/complete/response-fields.adoc[]
+
+
+== Error Response
+WIP
