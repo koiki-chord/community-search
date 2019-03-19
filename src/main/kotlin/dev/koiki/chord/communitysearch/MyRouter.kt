@@ -16,5 +16,6 @@ class MyRouter(
     @Bean
     fun routerFunction(): RouterFunction<ServerResponse> = router {
         POST("/search", handler::search)
+        GET("/complete", handler::complete)
     }
 }

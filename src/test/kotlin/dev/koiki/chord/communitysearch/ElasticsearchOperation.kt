@@ -46,7 +46,8 @@ class ElasticsearchOperation {
         fun dropIndex() {
             esClient.delete()
                     .uri("/chord")
-                    .exchange()
+                    .retrieve()
+                    .bodyToMono<JsonNode>()
                     .block()
         }
 

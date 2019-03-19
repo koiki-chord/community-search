@@ -81,6 +81,19 @@ class IntegrationTest(
     }
 
     @Test
+    fun complete01() {
+        val resultMono: Mono<List<CommunityComplete>> = webClient.get()
+                .uri("/complete?keyword={keyword}", mapOf("keyword" to "c"))
+                .retrieve()
+                .bodyToMono()
+
+        val result = resultMono.block()
+
+        assertThat(result)
+                .isEqualTo(listOf(CommunityComplete("CoD BOシリーズ", 1.0f)))
+    }
+
+    @Test
     fun validationError01() {
         val resultMono: Mono<Any> = webClient.post()
                 .uri("/search")

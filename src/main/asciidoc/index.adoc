@@ -1,4 +1,6 @@
 = Community Search API
+:toc: left
+:toclevels: 3
 
 == POST /search
 
@@ -20,3 +22,22 @@ include::{snippets}/search/response-body.adoc[]
 
 ==== Detail
 include::{snippets}/search/response-fields.adoc[]
+
+
+== GET /complete
+
+=== Request
+
+==== Sample
+include::{snippets}/complete/curl-request.adoc[]
+
+==== Request Parameters
+include::{snippets}/complete/request-parameters.adoc[]
+
+=== Response
+
+==== Response Body
+include::{snippets}/complete/response-body.adoc[]
+
+==== Detail
+include::{snippets}/complete/response-fields.adoc[]

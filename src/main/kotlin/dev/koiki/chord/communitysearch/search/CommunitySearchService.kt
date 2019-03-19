@@ -1,24 +1,18 @@
-package dev.koiki.chord.communitysearch
+package dev.koiki.chord.communitysearch.search
 
 import brave.Tracing
-import brave.propagation.CurrentTraceContext
-import brave.propagation.TraceContext
 import com.fasterxml.jackson.databind.ObjectMapper
-import com.fasterxml.jackson.module.kotlin.readValue
-import org.elasticsearch.action.ActionListener
+import dev.koiki.chord.communitysearch.Community
+import dev.koiki.chord.communitysearch.CommunitySearchRequest
 import org.elasticsearch.action.search.SearchRequest
-import org.elasticsearch.action.search.SearchResponse
 import org.elasticsearch.client.RequestOptions
 import org.elasticsearch.client.RestHighLevelClient
-import org.elasticsearch.index.query.BoolQueryBuilder
 import org.elasticsearch.index.query.Operator
 import org.elasticsearch.index.query.QueryBuilders
-import org.elasticsearch.search.SearchHit
 import org.elasticsearch.search.builder.SearchSourceBuilder
 import org.slf4j.LoggerFactory
 import org.springframework.stereotype.Service
 import reactor.core.publisher.Mono
-import reactor.core.publisher.MonoSink
 
 @Service
 class CommunitySearchService(
@@ -50,7 +44,7 @@ class CommunitySearchService(
         val traceContext = this.tracing.currentTraceContext().get()
 
         return Mono.create { sink ->
-            client.searchAsync(request, RequestOptions.DEFAULT, CommunityActionListener(sink, currentTraceContext, traceContext, mapper))
+            client.searchAsync(request, RequestOptions.DEFAULT, SearchResultListener(sink, currentTraceContext, traceContext, mapper))
         }
     }
 }

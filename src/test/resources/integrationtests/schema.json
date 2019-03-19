@@ -29,10 +29,29 @@
               "type":     "text",
               "analyzer": "my_kuromoji_analyzer"
             }
-          }
+          },
+          "copy_to": [
+            "searchCompletion"
+          ]
         },
         "desc": {
           "type": "text",
+          "fields": {
+            "english": {
+              "type":     "text",
+              "analyzer": "english"
+            },
+            "japanese": {
+              "type":     "text",
+              "analyzer": "my_kuromoji_analyzer"
+            }
+          },
+          "copy_to": [
+            "searchCompletion"
+          ]
+        },
+        "searchCompletion": {
+          "type": "completion",
           "fields": {
             "english": {
               "type":     "text",

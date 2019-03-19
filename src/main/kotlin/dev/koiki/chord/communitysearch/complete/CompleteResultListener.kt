@@ -1,25 +1,25 @@
-package dev.koiki.chord.communitysearch
+package dev.koiki.chord.communitysearch.complete
 
 import brave.propagation.CurrentTraceContext
 import brave.propagation.TraceContext
-import com.fasterxml.jackson.databind.ObjectMapper
-import com.fasterxml.jackson.module.kotlin.readValue
+import dev.koiki.chord.communitysearch.CommunityComplete
 import org.elasticsearch.action.ActionListener
 import org.elasticsearch.action.search.SearchResponse
-import org.elasticsearch.search.SearchHit
+import org.elasticsearch.search.suggest.completion.CompletionSuggestion
 import org.slf4j.LoggerFactory
 import reactor.core.publisher.MonoSink
+import kotlin.streams.toList
 
 /**
  * The magic of `scope` val is to use same trace.
  * Don't get TraceContext instance in this class by `currentTraceContext.get()`, it should be instance in a class which invokes this.
  * See details in CurrentTraceContext.wrap(...) method.
  */
-class CommunityActionListener(
-        private val sink: MonoSink<List<Community>>,
+class CompleteResultListener(
+        private val sink: MonoSink<List<CommunityComplete>>,
         private val currentTraceContext: CurrentTraceContext,
-        private val traceContext: TraceContext,
-        private val mapper: ObjectMapper) : ActionListener<SearchResponse> {
+        private val traceContext: TraceContext
+) : ActionListener<SearchResponse> {
 
     private val log = LoggerFactory.getLogger(this::class.java)
 
@@ -28,19 +28,17 @@ class CommunityActionListener(
 
         scope.use {
             if (log.isDebugEnabled)
-                log.debug("search result: ${mapper.writeValueAsString(response)}")
+                log.debug("complete suggestion result: $response")
 
-            val communities: List<Community> = mapper.readValue(
-                    response
-                            .hits
-                            .hits
-                            .joinToString(
-                                    transform = SearchHit::getSourceAsString,
-                                    prefix = "[", postfix = "]", separator = ","
-                            )
-            )
+            val options = response.suggest
+                    .getSuggestion<CompletionSuggestion>("my_suggestion")
+                    .options
 
-            sink.success(communities)
+            val completes = options.stream()
+                    .map { CommunityComplete(it.text.string(), it.score) }
+                    .toList()
+
+            sink.success(completes)
         }
     }
 
