@@ -7,10 +7,44 @@
           "mode": "search"
         }
       },
+      "filter": {
+        "my_kuromoji_readingform": {
+          "type": "kuromoji_readingform",
+          "use_romaji": false
+        },
+        "kana_filter": {
+          "type" : "icu_transform",
+          "id": "Katakana-Hiragana"
+        }
+      },
       "analyzer": {
-        "my_kuromoji_analyzer": {
+        "kuromoji_analyzer": {
           "type": "custom",
-          "tokenizer": "my_kuromoji_tokenizer"
+          "tokenizer": "my_kuromoji_tokenizer",
+          "filter": [
+            "kuromoji_baseform",
+            "kuromoji_part_of_speech",
+            "cjk_width",
+            "stop",
+            "ja_stop",
+            "kuromoji_stemmer",
+            "lowercase"
+          ]
+        },
+        "kuromoji_reading_analyzer": {
+          "type": "custom",
+          "tokenizer": "my_kuromoji_tokenizer",
+          "filter": [
+            "kuromoji_baseform",
+            "kuromoji_part_of_speech",
+            "cjk_width",
+            "stop",
+            "ja_stop",
+            "kuromoji_stemmer",
+            "my_kuromoji_readingform",
+            "kana_filter",
+            "lowercase"
+          ]
         }
       }
     }
@@ -20,48 +54,21 @@
       "properties": {
         "name": {
           "type": "text",
-          "fields": {
-            "english": {
-              "type":     "text",
-              "analyzer": "english"
-            },
-            "japanese": {
-              "type":     "text",
-              "analyzer": "my_kuromoji_analyzer"
-            }
-          },
+          "analyzer": "kuromoji_analyzer",
           "copy_to": [
             "searchCompletion"
           ]
         },
         "desc": {
           "type": "text",
-          "fields": {
-            "english": {
-              "type":     "text",
-              "analyzer": "english"
-            },
-            "japanese": {
-              "type":     "text",
-              "analyzer": "my_kuromoji_analyzer"
-            }
-          },
+          "analyzer": "kuromoji_analyzer",
           "copy_to": [
             "searchCompletion"
           ]
         },
         "searchCompletion": {
           "type": "completion",
-          "fields": {
-            "english": {
-              "type":     "text",
-              "analyzer": "english"
-            },
-            "japanese": {
-              "type":     "text",
-              "analyzer": "my_kuromoji_analyzer"
-            }
-          }
+          "analyzer": "kuromoji_reading_analyzer"
         },
         "tags": {
           "type": "nested",
