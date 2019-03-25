@@ -21,14 +21,17 @@ class CommunitySearchService(
 ) {
     private val log = LoggerFactory.getLogger(this::class.java)
 
-    fun search(text: String): Mono<List<Community>> {
+    fun search(request: CommunitySearchRequest): Mono<List<Community>> {
         val boolQueryBuilder = QueryBuilders.boolQuery()
 
-        boolQueryBuilder.should().add(QueryBuilders.matchQuery("name", text).operator(Operator.AND))
-        boolQueryBuilder.should().add(QueryBuilders.matchQuery("desc", text).operator(Operator.AND))
+        boolQueryBuilder.should().add(QueryBuilders.matchQuery("name", request.text).operator(Operator.AND))
+        boolQueryBuilder.should().add(QueryBuilders.matchQuery("desc", request.text).operator(Operator.AND))
         boolQueryBuilder.minimumShouldMatch(1)
 
-        val searchSourceBuilder = SearchSourceBuilder().query(boolQueryBuilder)
+        val searchSourceBuilder = SearchSourceBuilder()
+                .query(boolQueryBuilder)
+                .size(request.size)
+                .from(request.size * request.page)
 
         if (log.isDebugEnabled)
             log.debug("query: $searchSourceBuilder")

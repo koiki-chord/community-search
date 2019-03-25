@@ -55,17 +55,21 @@ class RestDocsTest {
 
         this.webTestClient
                 .get()
-                .uri("/search?text={text}", mapOf("text" to "Java Spring"))
+                .uri("/search?text={text}&size={size}&page={page}", mapOf("text" to "Java Spring", "size" to 20, "page" to 0))
                 .exchange()
                 .expectStatus().isOk
                 .expectBody()
                 .consumeWith(document("search",
                         requestParameters(
                                 parameterWithName("text")
-                                        .description("""NotNull and NotEmpty.
+                                        .description("""NotNull and NotBlank.
                                             | Text for full-text search.
                                             | Space represents "AND" condition
-                                            | so if text is "Java Spring", search result must have "Java" and "Spring".""".trimMargin())
+                                            | so if text is "Java Spring", search result must have "Java" and "Spring".""".trimMargin()),
+                                parameterWithName("size")
+                                        .description("Default is 20. TODO"),
+                                parameterWithName("page")
+                                        .description("Default is 0. TODO")
                         ),
                         responseFields(
                                 fieldWithPath("[].name").description("Name"),

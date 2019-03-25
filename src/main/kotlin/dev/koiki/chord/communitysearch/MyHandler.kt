@@ -1,6 +1,7 @@
 package dev.koiki.chord.communitysearch
 
 import dev.koiki.chord.communitysearch.complete.CommunityCompleteService
+import dev.koiki.chord.communitysearch.search.CommunitySearchRequest
 import dev.koiki.chord.communitysearch.search.CommunitySearchService
 import org.slf4j.LoggerFactory
 import org.slf4j.MDC
@@ -13,15 +14,16 @@ import reactor.core.publisher.Mono
 
 @Component
 class MyHandler(
+        val requestFactory: RequestFactory,
         val searchService: CommunitySearchService,
         val completeService: CommunityCompleteService
 ) {
     private val log = LoggerFactory.getLogger(this::class.java)
 
     fun search(request: ServerRequest): Mono<ServerResponse> {
-        val text = request.queryParam("text").orElseThrow { RuntimeException("todo") }
+        val searchRequest: CommunitySearchRequest = requestFactory.createSearchRequest(request)
 
-        return searchService.search(text)
+        return searchService.search(searchRequest)
                 .flatMap(::successResponse)
                 .onErrorResume(::errorResponse)
     }
