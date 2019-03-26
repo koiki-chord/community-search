@@ -17,7 +17,8 @@ import reactor.core.publisher.MonoSink
  * See details in CurrentTraceContext.wrap(...) method.
  */
 class SearchResultListener(
-        private val sink: MonoSink<List<Community>>,
+        private val sink: MonoSink<CommunitySearchResult>,
+        private val request: CommunitySearchRequest,
         private val currentTraceContext: CurrentTraceContext,
         private val traceContext: TraceContext,
         private val mapper: ObjectMapper
@@ -43,7 +44,16 @@ class SearchResultListener(
                             )
             )
 
-            sink.success(communities)
+            val result = CommunitySearchResult(
+                    communities = communities,
+                    meta = Meta(
+                            limit = request.limit,
+                            offset = request.offset,
+                            totalHits = response.hits.totalHits
+                    )
+            )
+
+            sink.success(result)
         }
     }
 

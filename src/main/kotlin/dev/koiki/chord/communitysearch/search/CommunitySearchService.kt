@@ -2,7 +2,6 @@ package dev.koiki.chord.communitysearch.search
 
 import brave.Tracing
 import com.fasterxml.jackson.databind.ObjectMapper
-import dev.koiki.chord.communitysearch.Community
 import org.elasticsearch.action.search.SearchRequest
 import org.elasticsearch.client.RequestOptions
 import org.elasticsearch.client.RestHighLevelClient
@@ -21,7 +20,7 @@ class CommunitySearchService(
 ) {
     private val log = LoggerFactory.getLogger(this::class.java)
 
-    fun search(request: CommunitySearchRequest): Mono<List<Community>> {
+    fun search(request: CommunitySearchRequest): Mono<CommunitySearchResult> {
         val boolQueryBuilder = QueryBuilders.boolQuery()
 
         boolQueryBuilder.should().add(QueryBuilders.matchQuery("name", request.text).operator(Operator.AND))
@@ -30,13 +29,13 @@ class CommunitySearchService(
 
         val searchSourceBuilder = SearchSourceBuilder()
                 .query(boolQueryBuilder)
-                .size(request.size)
-                .from(request.size * request.page)
+                .size(request.limit)
+                .from(request.offset)
 
         if (log.isDebugEnabled)
             log.debug("query: $searchSourceBuilder")
 
-        val request = SearchRequest()
+        val searchRequest = SearchRequest()
                 .indices("chord")
                 .source(searchSourceBuilder)
 
@@ -44,7 +43,7 @@ class CommunitySearchService(
         val traceContext = this.tracing.currentTraceContext().get()
 
         return Mono.create { sink ->
-            client.searchAsync(request, RequestOptions.DEFAULT, SearchResultListener(sink, currentTraceContext, traceContext, mapper))
+            client.searchAsync(searchRequest, RequestOptions.DEFAULT, SearchResultListener(sink, request, currentTraceContext, traceContext, mapper))
         }
     }
 }

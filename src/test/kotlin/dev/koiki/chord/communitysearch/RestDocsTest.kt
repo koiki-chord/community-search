@@ -1,5 +1,7 @@
 package dev.koiki.chord.communitysearch
 
+import dev.koiki.chord.communitysearch.search.CommunitySearchResult
+import dev.koiki.chord.communitysearch.search.Meta
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
 import org.junit.jupiter.api.extension.ExtendWith
@@ -46,16 +48,19 @@ class RestDocsTest {
 
     @Test
     fun search() {
-        val expected = BodyInserters.fromObject(listOf(
-                Community(name = "JSUG", desc = "Japan Spring User Group", tags = listOf(Tag(value = "Java")))
-        ))
+        val expected = BodyInserters.fromObject(
+                CommunitySearchResult(
+                        communities = listOf(Community(name = "JSUG", desc = "Japan Spring User Group", tags = listOf(Tag(value = "Java")))),
+                        meta = Meta(offset = 0, limit = 20, totalHits = 1)
+                )
+        )
 
         `when`(myHandler.search(any()))
                 .thenReturn(ServerResponse.ok().body(expected))
 
         this.webTestClient
                 .get()
-                .uri("/search?text={text}&size={size}&page={page}", mapOf("text" to "Java Spring", "size" to 20, "page" to 0))
+                .uri("/search?text={text}&limit={limit}&offset={offset}", mapOf("text" to "Java Spring", "limit" to 20, "offset" to 0))
                 .exchange()
                 .expectStatus().isOk
                 .expectBody()
@@ -66,15 +71,18 @@ class RestDocsTest {
                                             | Text for full-text search.
                                             | Space represents "AND" condition
                                             | so if text is "Java Spring", search result must have "Java" and "Spring".""".trimMargin()),
-                                parameterWithName("size")
+                                parameterWithName("limit")
                                         .description("Default is 20. TODO"),
-                                parameterWithName("page")
+                                parameterWithName("offset")
                                         .description("Default is 0. TODO")
                         ),
                         responseFields(
-                                fieldWithPath("[].name").description("Name"),
-                                fieldWithPath("[].desc").description("Description"),
-                                fieldWithPath("[].tags[].value").description("Tag value such as 'Java'")
+                                fieldWithPath("communities[].name").description("Name"),
+                                fieldWithPath("communities[].desc").description("Description"),
+                                fieldWithPath("communities[].tags[].value").description("Tag value such as 'Java'"),
+                                fieldWithPath("meta.offset").description("Offset"),
+                                fieldWithPath("meta.limit").description("Limit"),
+                                fieldWithPath("meta.totalHits").description("Total hits")
                         )
                 ))
     }

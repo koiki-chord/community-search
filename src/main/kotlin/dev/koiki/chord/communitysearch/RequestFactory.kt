@@ -10,8 +10,8 @@ class RequestFactory {
     fun createSearchRequest(request: ServerRequest): CommunitySearchRequest =
             CommunitySearchRequest(
                     text = getText(request),
-                    size = getSize(request) ?: 20,
-                    page = getPage(request) ?: 0
+                    limit = getLimit(request) ?: 20,
+                    offset = getOffset(request) ?: 0
             )
 
     private fun getText(request: ServerRequest): String {
@@ -24,19 +24,19 @@ class RequestFactory {
         return text
     }
 
-    private fun getSize(request: ServerRequest): Int? {
-        val size: Int? = request.queryParam("size")
+    private fun getLimit(request: ServerRequest): Int? {
+        val limit: Int? = request.queryParam("limit")
                 .map { it.toInt() }
                 .orElse(null)
 
-        if (size != null && size > 1_000)
+        if (limit != null && limit > 1_000)
             throw ValidationException(SIZE_SHOULD_NOT_BE_GREATER_THAN_1000,
-                    "size should not be greater than 1,000.")
+                    "limit should not be greater than 1,000.")
 
-        return size
+        return limit
     }
 
-    private fun getPage(request: ServerRequest): Int? = request.queryParam("page")
+    private fun getOffset(request: ServerRequest): Int? = request.queryParam("offset")
             .map { it.toInt() }
             .orElse(null)
 }

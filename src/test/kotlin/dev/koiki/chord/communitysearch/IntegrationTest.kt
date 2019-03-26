@@ -3,6 +3,7 @@ package dev.koiki.chord.communitysearch
 import com.fasterxml.jackson.databind.ObjectMapper
 import com.fasterxml.jackson.module.kotlin.KotlinModule
 import com.fasterxml.jackson.module.kotlin.readValue
+import dev.koiki.chord.communitysearch.search.CommunitySearchResult
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.jupiter.api.*
 import org.junit.jupiter.api.extension.ExtendWith
@@ -64,14 +65,14 @@ class IntegrationTest(
 
     @Test
     fun search01() {
-        val resultMono: Mono<List<Community>> = webClient.get()
+        val resultMono: Mono<CommunitySearchResult> = webClient.get()
                 .uri("/search?text={text}", mapOf("text" to "CoD BO"))
                 .retrieve()
                 .bodyToMono()
 
         val result = resultMono.block()
 
-        assertThat(result!!.map { it.name }.toList())
+        assertThat(result!!.communities)
                 .hasSize(2)
     }
 
