@@ -29,9 +29,9 @@ class RequestFactory {
                 .map { it.toInt() }
                 .orElse(null)
 
-        if (limit != null && limit > 1_000)
-            throw ValidationException(SIZE_SHOULD_NOT_BE_GREATER_THAN_1000,
-                    "limit should not be greater than 1,000.")
+        if (limit != null && limit !in 1 .. 1000)
+            throw ValidationException(LIMIT_IS_INVALID,
+                    "limit should be a value between 1 and 1,000 if it exists")
 
         return limit
     }

@@ -102,7 +102,7 @@ class IntegrationTest(
             fail("WebClientResponseException should be thrown")
         } catch (e: WebClientResponseException) {
             val errorRes: ErrorResponse = mapper.readValue(e.responseBodyAsString)
-            assertThat(errorRes.details[0].code).isEqualTo(ErrorCode.TEXT_SHOULD_NOT_BE_BLANK)
+            assertThat(errorRes.code).isEqualTo(ErrorCode.TEXT_SHOULD_NOT_BE_BLANK)
         }
     }
 }

@@ -43,6 +43,18 @@ class MyHandler(
 
     private fun errorResponse(t: Throwable): Mono<ServerResponse> =
             when(t) {
+                is ValidationException -> {
+                    ServerResponse
+                            .status(HttpStatus.BAD_REQUEST)
+                            .body(BodyInserters.fromObject(
+                                    ErrorResponse(
+                                            trace = getTrace(),
+                                            message = t.message,
+                                            code = t.code
+                                    )
+                            ))
+                }
+
                 else -> {
                     log.error(t.message, t)
 
@@ -51,12 +63,9 @@ class MyHandler(
                             .body(BodyInserters.fromObject(
                                     ErrorResponse(
                                             trace = getTrace(),
-                                            details = listOf(
-                                                    ErrorDetail(
-                                                            message = t.message ?: "error message is null"
-                                                    )
+                                            message = t.message ?: "internal server error happens"
                                     )
-                            )))
+                            ))
                 }
             }
 
