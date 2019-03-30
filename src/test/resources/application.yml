@@ -1,9 +1,0 @@
-spring:
-  application:
-    name: community-search
-  jackson:
-    serialization:
-      INDENT_OUTPUT: true
-logging:
-  level:
-    dev.koiki.chord.communitysearch: debug

@@ -11,6 +11,7 @@ import org.mockito.Mockito.mock
 import org.springframework.boot.test.context.SpringBootTest
 import org.springframework.restdocs.RestDocumentationContextProvider
 import org.springframework.restdocs.RestDocumentationExtension
+import org.springframework.restdocs.operation.preprocess.Preprocessors.prettyPrint
 import org.springframework.restdocs.payload.PayloadDocumentation.*
 import org.springframework.restdocs.request.RequestDocumentation.parameterWithName
 import org.springframework.restdocs.request.RequestDocumentation.requestParameters
@@ -34,7 +35,9 @@ class RestDocsTest {
 
         this.webTestClient = WebTestClient.bindToRouterFunction(myRouter.routerFunction())
                 .configureClient()
-                .filter(documentationConfiguration(restDocumentation))
+                .filter(documentationConfiguration(restDocumentation)
+                        .operationPreprocessors()
+                        .withResponseDefaults(prettyPrint()))
                 .build()
     }
 
