@@ -75,9 +75,9 @@ class RestDocsTest {
                                             | Space represents "AND" condition
                                             | so if text is "Java Spring", search result must have "Java" and "Spring".""".trimMargin()),
                                 parameterWithName("limit")
-                                        .description("Default is 20. TODO"),
+                                        .description("Default is 20. Value should be between 1 and 1,000."),
                                 parameterWithName("offset")
-                                        .description("Default is 0. TODO")
+                                        .description("Default is 0.")
                         ),
                         responseFields(
                                 fieldWithPath("communities[].name").description("Name"),
